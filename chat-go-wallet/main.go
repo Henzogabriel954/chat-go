@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/olahol/melody"
 )
+
+// Arquivo para persistência
+const ROOMS_FILE = "rooms.json"
 
 // Estrutura para representar nosso "Smart Contract" (Sala de Chat)
 type CryptoRoom struct {
@@ -28,6 +32,40 @@ var (
 	rooms      = make(map[string]CryptoRoom)
 )
 
+// --- PERSISTÊNCIA ---
+
+func saveRoomsToFile() {
+	roomsMutex.RLock()
+	defer roomsMutex.RUnlock()
+
+	data, err := json.MarshalIndent(rooms, "", "  ")
+	if err != nil {
+		fmt.Println("Erro ao salvar salas:", err)
+		return
+	}
+	_ = os.WriteFile(ROOMS_FILE, data, 0644)
+}
+
+func loadRoomsFromFile() {
+	roomsMutex.Lock()
+	defer roomsMutex.Unlock()
+
+	data, err := os.ReadFile(ROOMS_FILE)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return // Arquivo não existe, tudo bem
+		}
+		fmt.Println("Erro ao ler arquivo de salas:", err)
+		return
+	}
+
+	if err := json.Unmarshal(data, &rooms); err != nil {
+		fmt.Println("Erro ao decodificar salas:", err)
+	} else {
+		fmt.Printf("📂 Carregadas %d salas do disco.\n", len(rooms))
+	}
+}
+
 // Função auxiliar para gerar hash estilo carteira (ex: 0x7f9a...)
 func generateWalletAddress() string {
 	b := make([]byte, 10) // 20 caracteres hex
@@ -38,6 +76,9 @@ func generateWalletAddress() string {
 func main() {
 	// Carrega .env (se existir)
 	_ = godotenv.Load() // Ignora erro se não existir .env
+
+	// Carrega salas salvas
+	loadRoomsFromFile()
 
 	r := gin.Default()
 
@@ -65,6 +106,9 @@ func main() {
 		roomsMutex.Lock()
 		rooms[address] = newRoom
 		roomsMutex.Unlock()
+
+		// Salva no disco
+		go saveRoomsToFile()
 
 		// Retorna os dados para o criador
 		c.JSON(http.StatusOK, gin.H{
