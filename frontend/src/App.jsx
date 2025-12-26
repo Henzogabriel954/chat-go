@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
 
 // --- ICONS & UI (Estilo Tech) ---
 
@@ -355,6 +356,13 @@ function App() {
                   <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] transition-colors duration-500 ${isConnected ? 'bg-green-500 text-green-500' : 'bg-red-500 text-red-500'}`}></div>
                   <h2 className="font-bold text-lg text-white tracking-wide">{activeServer.name}</h2>
                   <span className="text-xs font-mono text-gray-600 bg-gray-900 px-2 py-0.5 rounded border border-gray-800 hidden md:inline-block">{activeServer.address.substring(0,8)}...</span>
+                  <button 
+                     onClick={() => setShowServerInfo(true)}
+                     className="p-1.5 text-gray-500 hover:text-green-500 transition-colors"
+                     title="Informações da Sala"
+                  >
+                     <EyeIcon />
+                  </button>
                </div>
                
                <div className="flex items-center gap-3 text-sm">
@@ -472,19 +480,15 @@ function App() {
                   <p className="text-gray-400 text-sm mt-1">Salve estas credenciais. Elas são a única chave de entrada.</p>
                </div>
 
-               {/* QR CODE SIMULADO */}
+               {/* QR CODE REAL */}
                <div className="flex justify-center mb-8">
                   <div className="bg-white p-3 rounded-xl shadow-lg transform hover:scale-105 transition-transform cursor-pointer" title="QR Code de Login">
-                     {/* Simulação visual de QR Code usando Grid */}
-                     <div className="w-28 h-28 sm:w-32 sm:h-32 bg-black grid grid-cols-4 gap-1 p-1 relative">
-                        {[...Array(16)].map((_,i) => (
-                           <div key={i} className={`rounded-sm ${Math.random() > 0.5 ? 'bg-white' : 'bg-black'}`}></div>
-                        ))}
-                        {/* Olhos do QR Code */}
-                        <div className="absolute w-7 h-7 sm:w-8 sm:h-8 border-2 border-white bg-black top-4 left-4"></div>
-                        <div className="absolute w-7 h-7 sm:w-8 sm:h-8 border-2 border-white bg-black top-4 right-4"></div>
-                        <div className="absolute w-7 h-7 sm:w-8 sm:h-8 border-2 border-white bg-black bottom-4 left-4"></div>
-                     </div>
+                     <QRCodeSVG 
+                        value={`walletchat://${newCreatedRoom.address}?key=${newCreatedRoom.key}`}
+                        size={128}
+                        level={"H"}
+                        includeMargin={false}
+                     />
                   </div>
                </div>
 
@@ -532,12 +536,13 @@ function App() {
                <h3 className="text-lg font-bold text-white mb-3">Informações da Sala</h3>
 
                <div className="flex justify-center mb-4">
-                  <div className="w-20 h-20 sm:w-28 sm:h-28 bg-white p-2 rounded-xl shadow-lg cursor-pointer">
-                     <div className="w-full h-full bg-black grid grid-cols-4 gap-1 p-1">
-                        {[...Array(16)].map((_,i) => (
-                           <div key={i} className={`rounded-sm ${Math.random() > 0.5 ? 'bg-white' : 'bg-black'}`}></div>
-                        ))}
-                     </div>
+                  <div className="bg-white p-2 rounded-xl shadow-lg cursor-pointer">
+                     <QRCodeSVG 
+                        value={`walletchat://${activeServer.address}?key=${activeServer.key}`}
+                        size={112}
+                        level={"H"}
+                        includeMargin={false}
+                     />
                   </div>
                </div>
 

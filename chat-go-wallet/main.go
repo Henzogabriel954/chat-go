@@ -23,6 +23,7 @@ const ROOMS_FILE = "rooms.json"
 type CryptoRoom struct {
 	Address   string `json:"address"`    // ID Público da Sala (ex: 0x123...)
 	AccessKey string `json:"access_key"` // Chave Privada para entrar
+	QRString  string `json:"qr_string"`  // String que deve ser codificada no QR Code (ex: walletchat://0x..?key=..)
 	CreatedAt int64  `json:"created_at"`
 }
 
@@ -63,6 +64,13 @@ func loadRoomsFromFile() {
 		fmt.Println("Erro ao decodificar salas:", err)
 	} else {
 		fmt.Printf("📂 Carregadas %d salas do disco.\n", len(rooms))
+		// Backfill qr_string para compatibilidade com versões antigas
+		for addr, rm := range rooms {
+			if rm.QRString == "" {
+				rm.QRString = fmt.Sprintf("walletchat://%s?key=%s", rm.Address, rm.AccessKey)
+				rooms[addr] = rm
+			}
+		}
 	}
 }
 
@@ -101,6 +109,7 @@ func main() {
 		newRoom := CryptoRoom{
 			Address:   address,
 			AccessKey: key,
+			QRString:  fmt.Sprintf("walletchat://%s?key=%s", address, key),
 		}
 
 		roomsMutex.Lock()
@@ -115,7 +124,26 @@ func main() {
 			"status":     "success",
 			"address":    newRoom.Address,
 			"access_key": newRoom.AccessKey,
-			"qr_string":  fmt.Sprintf("walletchat://%s?key=%s", newRoom.Address, newRoom.AccessKey),
+			"qr_string":  newRoom.QRString,
+		})
+	})
+
+	// Rota: Obter dados de uma sala existente (inclui qr_string)
+	r.GET("/api/contract/:address", func(c *gin.Context) {
+		address := c.Param("address")
+		roomsMutex.RLock()
+		room, exists := rooms[address]
+		roomsMutex.RUnlock()
+
+		if !exists {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Sala não encontrada."})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"address":    room.Address,
+			"access_key": room.AccessKey,
+			"qr_string":  room.QRString,
 		})
 	})
 
