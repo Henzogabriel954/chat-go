@@ -46,5 +46,11 @@
     "access_key": "ad7316f1-eb47-4ff6-a5fd-4faf0a3bbdce",
     "qr_string": "walletchat://0xd95646a7a3570012258b?key=ad7316f1-eb47-4ff6-a5fd-4faf0a3bbdce",
     "created_at": 0
+  },
+  "0xed8d451dcc788f78fb31": {
+    "address": "0xed8d451dcc788f78fb31",
+    "access_key": "93947700-a8f3-47d4-a5ec-d7b2989dce98",
+    "qr_string": "walletchat://0xed8d451dcc788f78fb31?key=93947700-a8f3-47d4-a5ec-d7b2989dce98",
+    "created_at": 0
   }
 }

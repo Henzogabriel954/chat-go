@@ -230,10 +230,15 @@ function App() {
     if (!formData.name.trim()) return alert("Dê um nome para a sala.");
     try {
       const baseUrl = getBackendUrl('http');
-      const res = await fetch(`${baseUrl}/api/contract/create`, { method: 'POST' });
+      const res = await fetch(`${baseUrl}/api/contract/create`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: formData.name })
+      });
       const data = await res.json();
       
-      const safeName = enforceMaxName(formData.name);
+      const returnedName = data.name || formData.name;
+      const safeName = enforceMaxName(returnedName);
       const newServer = {
         id: Date.now(),
         name: safeName,
@@ -252,10 +257,22 @@ function App() {
     }
   };
 
-  const joinServer = () => {
+  const joinServer = async () => {
     if (!formData.address || !formData.key) return alert("Dados incompletos.");
-    
-    const safeName = enforceMaxName(formData.name || "Sala Importada");
+
+    const baseUrl = getBackendUrl('http');
+    let fetchedName = null;
+    try {
+      const res = await fetch(`${baseUrl}/api/contract/${formData.address}`);
+      if (res.ok) {
+        const info = await res.json();
+        fetchedName = info.name;
+      }
+    } catch (e) {
+      // ignore, fallback to provided name
+    }
+
+    const safeName = enforceMaxName(fetchedName || formData.name || "Sala Importada");
     const newServer = {
       id: Date.now(),
       name: safeName,
@@ -276,14 +293,18 @@ function App() {
   };
 
   const handleLeaveServer = () => {
-    if (activeServer) {
-      // Filter out the active server from the servers list
-      setServers(prevServers => prevServers.filter(server => server.id !== activeServer.id));
-    }
-    // Fechar o painel de info caso esteja aberto
+    // Apenas volta para a tela inicial sem remover a sala da lista
     setShowServerInfo(false);
     setShowCredentials(false);
-    // Set active server to null to go back to home screen
+    setActiveServer(null);
+  };
+
+  // Caso queira remover (sair permanentemente) da lista, use esta função separada
+  const removeActiveServer = () => {
+    if (!activeServer) return;
+    setServers(prevServers => prevServers.filter(server => server.id !== activeServer.id));
+    setShowServerInfo(false);
+    setShowCredentials(false);
     setActiveServer(null);
   };
 

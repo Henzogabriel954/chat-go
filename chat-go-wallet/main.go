@@ -23,6 +23,7 @@ const ROOMS_FILE = "rooms.json"
 type CryptoRoom struct {
 	Address   string `json:"address"`    // ID Público da Sala (ex: 0x123...)
 	AccessKey string `json:"access_key"` // Chave Privada para entrar
+	Name      string `json:"name"`       // Nome da sala
 	QRString  string `json:"qr_string"`  // String que deve ser codificada no QR Code (ex: walletchat://0x..?key=..)
 	CreatedAt int64  `json:"created_at"`
 }
@@ -64,12 +65,15 @@ func loadRoomsFromFile() {
 		fmt.Println("Erro ao decodificar salas:", err)
 	} else {
 		fmt.Printf("📂 Carregadas %d salas do disco.\n", len(rooms))
-		// Backfill qr_string para compatibilidade com versões antigas
+		// Backfill qr_string e name para compatibilidade com versões antigas
 		for addr, rm := range rooms {
 			if rm.QRString == "" {
 				rm.QRString = fmt.Sprintf("walletchat://%s?key=%s", rm.Address, rm.AccessKey)
-				rooms[addr] = rm
 			}
+			if strings.TrimSpace(rm.Name) == "" {
+				rm.Name = fmt.Sprintf("Sala %s", rm.Address[2:8])
+			}
+			rooms[addr] = rm
 		}
 	}
 }
@@ -103,12 +107,24 @@ func main() {
 
 	// Rota para Criar uma Nova Sala Segura
 	r.POST("/api/contract/create", func(c *gin.Context) {
+		// Aceita JSON opcional com { name: "Nome da Sala" }
+		var req struct{
+			Name string `json:"name"`
+		}
+		_ = c.BindJSON(&req) // ignorar erro se não vier body
+
 		address := generateWalletAddress()
 		key := uuid.New().String() // Chave UUID v4 complexa
+
+		name := strings.TrimSpace(req.Name)
+		if name == "" {
+			name = fmt.Sprintf("Sala %s", address[2:8])
+		}
 
 		newRoom := CryptoRoom{
 			Address:   address,
 			AccessKey: key,
+			Name:      name,
 			QRString:  fmt.Sprintf("walletchat://%s?key=%s", address, key),
 		}
 
@@ -124,6 +140,7 @@ func main() {
 			"status":     "success",
 			"address":    newRoom.Address,
 			"access_key": newRoom.AccessKey,
+			"name":       newRoom.Name,
 			"qr_string":  newRoom.QRString,
 		})
 	})
@@ -143,6 +160,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{
 			"address":    room.Address,
 			"access_key": room.AccessKey,
+			"name":       room.Name,
 			"qr_string":  room.QRString,
 		})
 	})
