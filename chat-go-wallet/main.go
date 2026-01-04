@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/gin-contrib/cors"
@@ -198,11 +199,48 @@ func main() {
 	m.HandleConnect(func(s *melody.Session) {
 		userID := "User-" + generateWalletAddress()[2:6]
 		s.Set("user_id", userID)
+
+		// Extrai o endereço da URL (rota: /ws/<address>) e salva o nome da sala na sessão
+		path := strings.Trim(s.Request.URL.Path, "/") // "ws/0xabc..."
+		parts := strings.Split(path, "/")
+		if len(parts) >= 2 && parts[0] == "ws" {
+			address := parts[1]
+			roomsMutex.RLock()
+			room, ok := rooms[address]
+			roomsMutex.RUnlock()
+			if ok {
+				s.Set("room_name", room.Name)
+				s.Set("room_address", address)
+			}
+		}
 		// Opcional: Logar conexão
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
-		// Pega a sala atual e faz broadcast apenas para quem está nela
+		// Tenta injetar o nome da sala no payload (se for JSON) antes do broadcast
+		var payload map[string]interface{}
+		if err := json.Unmarshal(msg, &payload); err == nil {
+			if rn, ok := s.Get("room_name"); ok {
+				payload["room_name"] = rn
+			} else {
+				// Fallback: tenta obter a partir do endereço na URL
+				urlPath := s.Request.URL.Path
+				parts := strings.Split(strings.Trim(urlPath, "/"), "/")
+				if len(parts) >= 2 && parts[0] == "ws" {
+					addr := parts[1]
+					roomsMutex.RLock()
+					if room, exists := rooms[addr]; exists {
+						payload["room_name"] = room.Name
+					}
+					roomsMutex.RUnlock()
+				}
+			}
+			if b, err := json.Marshal(payload); err == nil {
+				msg = b
+			}
+		}
+
+		// Broadcast só para sessões na mesma URL
 		urlPath := s.Request.URL.Path
 		m.BroadcastFilter(msg, func(q *melody.Session) bool {
 			return q.Request.URL.Path == urlPath

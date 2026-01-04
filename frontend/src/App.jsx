@@ -178,7 +178,47 @@ function App() {
 
     socket.onopen = () => setIsConnected(true);
     
-    socket.onmessage = (event) => {
+    socket.onmessage = (event) => {   // Conectar ao socket
+   const connectToServer = (server) => {
+     const baseUrl = getBackendUrl('ws');
+     const url = `${baseUrl}/ws/${server.address}?key=${server.key}`;
+     const socket = new WebSocket(url);
+   
+     socket.onopen = () => setIsConnected(true);
+   
+     socket.onmessage = (event) => {
+       try {
+         const msg = JSON.parse(event.data);
+         setMessages(prev => [...prev, msg]);
+         saveMessageLocally(server.address, msg); // salva a mensagem recebida
+       } catch (e) {
+         // mensagens não-JSON opcionais
+       }
+     };
+   
+     socket.onclose = (e) => {
+       setIsConnected(false);
+     };
+   
+     setWs(socket);
+   }
+   
+   // Enviar mensagem
+   const sendMessage = (e) => {
+     e.preventDefault();
+     if (!inputMsg.trim() || !ws) return;
+   
+     const payload = {
+       type: 'chat',
+       text: inputMsg,
+       sender: username,
+       timestamp: Date.now()
+     };
+   
+     // Não enviar antes de ws.onopen
+     ws.send(JSON.stringify(payload));
+     setInputMsg('');
+   };
       try {
         const msg = JSON.parse(event.data);
         setMessages(prev => [...prev, msg]);
@@ -293,7 +333,16 @@ function App() {
   };
 
   const handleLeaveServer = () => {
-    // Apenas volta para a tela inicial sem remover a sala da lista
+    // Remove permanentemente a sala da lista (comportamento estilo "leave" do Discord)
+    if (!activeServer) return;
+    setServers(prev => prev.filter(server => server.id !== activeServer.id));
+
+    // Remove histórico local do chat ao sair da sala
+    const storageKey = `chat_history_${activeServer.address}`;
+    localStorage.removeItem(storageKey);
+
+    // Limpa o estado de mensagens também para refletir a remoção imediata
+    setMessages([]);
     setShowServerInfo(false);
     setShowCredentials(false);
     setActiveServer(null);

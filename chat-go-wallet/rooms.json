@@ -2,54 +2,84 @@
   "0x0b2d386b9c3fd4a27e59": {
     "address": "0x0b2d386b9c3fd4a27e59",
     "access_key": "eb083877-355f-4635-ba37-12c027484cb0",
+    "name": "Sala 0b2d38",
     "qr_string": "walletchat://0x0b2d386b9c3fd4a27e59?key=eb083877-355f-4635-ba37-12c027484cb0",
     "created_at": 0
   },
   "0x182ba6ef4f74f563a053": {
     "address": "0x182ba6ef4f74f563a053",
     "access_key": "4be6a1a5-4495-4cde-a430-3efc49946625",
+    "name": "Sala 182ba6",
     "qr_string": "walletchat://0x182ba6ef4f74f563a053?key=4be6a1a5-4495-4cde-a430-3efc49946625",
+    "created_at": 0
+  },
+  "0x1e8982c348cd91e89615": {
+    "address": "0x1e8982c348cd91e89615",
+    "access_key": "01cae5cc-7124-4902-a4ec-d9cbff386740",
+    "name": "tt",
+    "qr_string": "walletchat://0x1e8982c348cd91e89615?key=01cae5cc-7124-4902-a4ec-d9cbff386740",
     "created_at": 0
   },
   "0x567f0e0cd51ab59dfe35": {
     "address": "0x567f0e0cd51ab59dfe35",
     "access_key": "6e10a8ec-27e2-42e4-a23e-aa31798d8f05",
+    "name": "Sala 567f0e",
     "qr_string": "walletchat://0x567f0e0cd51ab59dfe35?key=6e10a8ec-27e2-42e4-a23e-aa31798d8f05",
     "created_at": 0
   },
   "0x64d6b57ff27ed5da7008": {
     "address": "0x64d6b57ff27ed5da7008",
     "access_key": "3cedc44f-1e58-4a0b-8855-a2405d13717d",
+    "name": "Sala 64d6b5",
     "qr_string": "walletchat://0x64d6b57ff27ed5da7008?key=3cedc44f-1e58-4a0b-8855-a2405d13717d",
     "created_at": 0
   },
   "0x663448a82faf8260ec07": {
     "address": "0x663448a82faf8260ec07",
     "access_key": "53dc1f2b-746b-4124-8d33-2fe9df972f60",
+    "name": "Sala 663448",
     "qr_string": "walletchat://0x663448a82faf8260ec07?key=53dc1f2b-746b-4124-8d33-2fe9df972f60",
     "created_at": 0
   },
   "0x73d39e948aaa24b088cd": {
     "address": "0x73d39e948aaa24b088cd",
     "access_key": "e1bd7fe6-3acf-480e-a94e-1d08bb23c190",
+    "name": "Sala 73d39e",
     "qr_string": "walletchat://0x73d39e948aaa24b088cd?key=e1bd7fe6-3acf-480e-a94e-1d08bb23c190",
     "created_at": 0
   },
   "0xba2f6bc0469fdcb49ac3": {
     "address": "0xba2f6bc0469fdcb49ac3",
     "access_key": "1b14b7cc-7790-4d82-9b1c-8416b66e72a9",
+    "name": "Sala ba2f6b",
     "qr_string": "walletchat://0xba2f6bc0469fdcb49ac3?key=1b14b7cc-7790-4d82-9b1c-8416b66e72a9",
+    "created_at": 0
+  },
+  "0xbdd3392e5debeb671944": {
+    "address": "0xbdd3392e5debeb671944",
+    "access_key": "10fdbcc7-0854-4bc0-9081-65b90670df9f",
+    "name": "test",
+    "qr_string": "walletchat://0xbdd3392e5debeb671944?key=10fdbcc7-0854-4bc0-9081-65b90670df9f",
     "created_at": 0
   },
   "0xd95646a7a3570012258b": {
     "address": "0xd95646a7a3570012258b",
     "access_key": "ad7316f1-eb47-4ff6-a5fd-4faf0a3bbdce",
+    "name": "Sala d95646",
     "qr_string": "walletchat://0xd95646a7a3570012258b?key=ad7316f1-eb47-4ff6-a5fd-4faf0a3bbdce",
+    "created_at": 0
+  },
+  "0xdfb16ad427ebf49a7d2e": {
+    "address": "0xdfb16ad427ebf49a7d2e",
+    "access_key": "b684bc7a-59f7-422d-bc12-54b835334022",
+    "name": "android",
+    "qr_string": "walletchat://0xdfb16ad427ebf49a7d2e?key=b684bc7a-59f7-422d-bc12-54b835334022",
     "created_at": 0
   },
   "0xed8d451dcc788f78fb31": {
     "address": "0xed8d451dcc788f78fb31",
     "access_key": "93947700-a8f3-47d4-a5ec-d7b2989dce98",
+    "name": "Sala ed8d45",
     "qr_string": "walletchat://0xed8d451dcc788f78fb31?key=93947700-a8f3-47d4-a5ec-d7b2989dce98",
     "created_at": 0
   }
